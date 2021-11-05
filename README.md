@@ -13,3 +13,5 @@ mecabのインストールを最初に行ってください.
 ~$ pip3 install -r requirements.txt
 ~$ python3 make_som_data.py
 ```
+# 最後に
+バグ等ありましたら[Issues](https://github.com/visual-media-lab/make_som_data/issues)まで
