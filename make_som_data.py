@@ -43,6 +43,30 @@ class WordDividor:
             node = node.next
         return words
 
+#文章中に出現する単語をすべて取得する
+#単語数がn個より多い場合は入力された全文章中上位n番目までの単語に絞る
+def make_word_list(data):
+    wd=WordDividor()
+    counter=dict()
+    for text in data:
+        w=wd.extract_words(text)
+        for i in w:
+            if i not in counter:
+                counter[i]=1
+            else:
+                counter[i]+=1
+    
+    #出現頻度の降順にソート
+    counter=sorted(counter.items(),key=lambda x:x[1],reverse=True)
+
+    n=config["words_num"]
+    if len(counter)>n:
+        nth_num=counter[n-1][1]
+        words_list=[i[0] for i in counter if i[1]>nth_num]
+    else:
+        words_list=[i[0] for i in counter]
+    return words_list
+
 def make_CountVectorizer(data):
     wd=WordDividor()
     cv=CountVectorizer(analyzer=wd.extract_words)
@@ -102,6 +126,10 @@ if __name__=="__main__":
     #タイトルによる自己組織化マップ生成
     data,label=get_sentence(path,config["sentence_index"],config["label_index"],config["label_dict"])
 
+    if config["huge_data"]:
+        #省メモリ版
+        make_Vector_few_memory(data,label)
+    else:
     counts=make_CountVectorizer(data)
     sum_L=[sum(i) for i in counts]
     for i in range(len(sum_L)):
