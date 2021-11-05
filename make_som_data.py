@@ -4,6 +4,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 import csv
 import mojimoji
 import yaml
+import tqdm
+
 csv.field_size_limit(1000000000)
 
 with open("config.yaml") as f:
@@ -82,6 +84,40 @@ def make_CountVectorizer(data):
         f.writelines(word_list)
     return counts.toarray()
 
+#データ数が非常に大きいときはこちらを使う
+def make_Vector_few_memory(data,label):
+    wd=WordDividor()
+    words_list=make_word_list(data)
+    
+    with open(config["output_path"],mode="w") as f:
+        f.write(str(len(words_list))+"\n")
+        for i in tqdm.tqdm(range(len(label))):
+            #単語に分解
+            text=data[i]
+            words=wd.extract_words(text)
+
+            #words_listに含まれる単語の出現頻度をカウントする
+            #カウンターの初期化
+            counter=dict()
+            for j in words_list:
+                counter[j]=0
+            
+            #カウント
+            for j in words:
+                if j in counter:
+                    counter[j]+=1
+            counts=[counter[j] for j in words_list]
+            #sum(counts)が1になるようにした上で文字列にして書き込む
+            counts_sum=sum(counts)
+            #print(label[i])
+            counts=" ".join([f'{j/counts_sum:f}' for j in counts])+" "+label[i]+"\n"
+            f.write(counts)
+
+    #単語リストの出力
+    with open(config["wordlist_path"],mode='w') as f:
+        for i in range(len(words_list)):
+            f.write("{},{}\n".format(words_list[i],i))
+
 #CSVファイルから文章を取り出す
 #sentence_index: 何列目に文章があるか
 #label_index: 引っ張りたいラベルが何列目か
@@ -130,22 +166,22 @@ if __name__=="__main__":
         #省メモリ版
         make_Vector_few_memory(data,label)
     else:
-    counts=make_CountVectorizer(data)
-    sum_L=[sum(i) for i in counts]
-    for i in range(len(sum_L)):
-        if sum_L[i]==0:
-            print("zero",i,data[i])
+        counts=make_CountVectorizer(data)
+        sum_L=[sum(i) for i in counts]
+        for i in range(len(sum_L)):
+            if sum_L[i]==0:
+                print("zero",i,data[i])
 
-    counts=[list(i/sum(i)) for i in counts]
-    num=len(counts[0])
+        counts=[list(i/sum(i)) for i in counts]
+        num=len(counts[0])
 
-    for i in range(len(counts)):
-        counts[i]=" ".join([f'{j:f}' for j in counts[i]])
-        counts[i]+=" "+"".join(label[i])+"\n"
-    counts=[str(num)+"\n"]+counts
+        for i in range(len(counts)):
+            counts[i]=" ".join([f'{j:f}' for j in counts[i]])
+            counts[i]+=" "+"".join(label[i])+"\n"
+        counts=[str(num)+"\n"]+counts
 
-    #ファイル書き込み
-    print("writing...")
-    with open(config["output_path"],mode="w") as f:
-        f.writelines(counts)
-    print("complete!")
+        #ファイル書き込み
+        print("writing...")
+        with open(config["output_path"],mode="w") as f:
+            f.writelines(counts)
+        print("complete!")
