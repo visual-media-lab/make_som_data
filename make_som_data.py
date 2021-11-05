@@ -4,6 +4,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import csv
 import mojimoji
 import yaml
+csv.field_size_limit(1000000000)
 
 with open("config.yaml") as f:
     config=yaml.safe_load(f)
