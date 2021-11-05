@@ -43,29 +43,6 @@ class WordDividor:
             node = node.next
         return words
 
-#文章中に出現する単語をすべて取得する
-#単語数がn個より多い場合は入力された全文章中上位n番目までの単語に絞る
-def make_word_list(data):
-    wd=WordDividor()
-    counter=dict()
-    for text in data:
-        w=wd.extract_words(text)
-        for i in w:
-            if i not in counter:
-                counter[i]=1
-            else:
-                counter[i]+=1
-    
-    #出現頻度の降順にソート
-    counter=sorted(counter.items(),key=lambda x:x[1],reverse=True)
-
-    n=config["words_num"]
-    if len(counter)>n:
-        nth_num=counter[n-1][1]
-        words_list=[i[0] for i in counter if i[1]>nth_num]
-    else:
-        words_list=[i[0] for i in counter]
-    return words_list
 def make_CountVectorizer(data):
     wd=WordDividor()
     cv=CountVectorizer(analyzer=wd.extract_words)
@@ -109,6 +86,8 @@ def get_sentence(path,sentence_index,label_index,label_dict=None):
 
         if label_dict is not None:
             l="".join(map(str,[label_dict[i] for i in l if i in label_dict]))
+        else:
+            l="".join(l)
 
         if "その他" not in l and len(sentence)>0:
             L.append(mojimoji.han_to_zen(sentence))#ここで半角文字はすべて全角文字にしている
