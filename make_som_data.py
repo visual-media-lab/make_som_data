@@ -110,7 +110,8 @@ def make_Vector_few_memory(data,label):
             #sum(counts)が1になるようにした上で文字列にして書き込む
             counts_sum=sum(counts)
             #print(label[i])
-            counts=" ".join([f'{j/counts_sum:f}' for j in counts])+" "+label[i]+"\n"
+            if counts_sum>0:
+                counts=" ".join([f'{j/counts_sum:f}' for j in counts])+" "+label[i]+"\n"
             f.write(counts)
 
     #単語リストの出力
