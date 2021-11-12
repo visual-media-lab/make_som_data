@@ -112,7 +112,7 @@ def make_Vector_few_memory(data,label):
             #print(label[i])
             if counts_sum>0:
                 counts=" ".join([f'{j/counts_sum:f}' for j in counts])+" "+label[i]+"\n"
-            f.write(counts)
+                f.write(counts)
 
     #単語リストの出力
     with open(config["wordlist_path"],mode='w') as f:
