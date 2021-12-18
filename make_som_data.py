@@ -91,6 +91,7 @@ def make_Vector_few_memory(data,label):
     
     with open(config["output_path"],mode="w") as f:
         f.write(str(len(words_list))+"\n")
+        print(len(words_list))
         for i in tqdm.tqdm(range(len(label))):
             #単語に分解
             text=data[i]
@@ -113,7 +114,6 @@ def make_Vector_few_memory(data,label):
             if counts_sum>0:
                 counts=" ".join([f'{j/counts_sum:f}' for j in counts])+" "+label[i]+"\n"
                 f.write(counts)
-
     #単語リストの出力
     with open(config["wordlist_path"],mode='w') as f:
         for i in range(len(words_list)):
@@ -128,7 +128,7 @@ def get_sentence(path,sentence_index,label_index,label_dict=None):
     csv_file=open(path,"r",errors="",newline="")
     rawdata_L=csv.reader(csv_file,delimiter=",",doublequote=True,lineterminator="\r\n",quotechar='"',skipinitialspace=True)
     rawdata_L=list(rawdata_L)
-    rawdata_L=[i for i in rawdata_L[1:]]
+    # rawdata_L=[i for i in rawdata_L[1:]]
 
     #データとラベルに分離
     L=[]
@@ -139,7 +139,9 @@ def get_sentence(path,sentence_index,label_index,label_dict=None):
 
         #ラベルを全角にする
         if config["label_to_zen"]:
+            #空白は_でつなぐ
             l=[mojimoji.han_to_zen(i) for i in l]
+        l=[i.replace(" ","_").replace("　","_")]
 
         #もともとラベルがない場合は無視する
         if len(l)==0:
