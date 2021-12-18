@@ -141,7 +141,7 @@ def get_sentence(path,sentence_index,label_index,label_dict=None):
         if config["label_to_zen"]:
             #空白は_でつなぐ
             l=[mojimoji.han_to_zen(i) for i in l]
-        l=[i.replace(" ","_").replace("　","_")]
+        l=[i.replace(" ","_").replace("　","_") for i in l]
 
         #もともとラベルがない場合は無視する
         if len(l)==0:
